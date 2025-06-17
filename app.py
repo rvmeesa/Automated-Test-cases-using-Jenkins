@@ -19,6 +19,8 @@ def index():
 @app.route('/add', methods=['POST'])
 def add():
     task_content = request.form['task']
+    if len(task_content) > 100:
+        return redirect(url_for('index'))  # Reject tasks > 100 chars
     conn = sqlite3.connect('database.db')
     conn.execute('INSERT INTO tasks (content, done) VALUES (?, ?)', (task_content, 0))
     conn.commit()
@@ -28,18 +30,22 @@ def add():
 @app.route('/delete/<int:task_id>', methods=['POST'])
 def delete(task_id):
     conn = sqlite3.connect('database.db')
-    conn.execute('DELETE FROM tasks WHERE id=?', (task_id,))
-    conn.commit()
+    cursor = conn.execute('SELECT id FROM tasks WHERE id = ?', (task_id,))
+    if cursor.fetchone():  # Verify task exists
+        conn.execute('DELETE FROM tasks WHERE id = ?', (task_id,))
+        conn.commit()
     conn.close()
     return redirect(url_for('index'))
 
 @app.route('/toggle/<int:task_id>', methods=['POST'])
 def toggle(task_id):
     conn = sqlite3.connect('database.db')
-    cursor = conn.execute('SELECT done FROM tasks WHERE id=?', (task_id,))
-    done = cursor.fetchone()[0]
-    conn.execute('UPDATE tasks SET done=? WHERE id=?', (0 if done else 1, task_id))
-    conn.commit()
+    cursor = conn.execute('SELECT done FROM tasks WHERE id = ?', (task_id,))
+    result = cursor.fetchone()
+    if result:  # Verify task exists
+        done = result[0]
+        conn.execute('UPDATE tasks SET done = ? WHERE id = ?', (0 if done else 1, task_id))
+        conn.commit()
     conn.close()
     return redirect(url_for('index'))
 
