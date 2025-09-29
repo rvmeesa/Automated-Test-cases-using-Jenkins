@@ -1,6 +1,3 @@
-To create an effective README for the GitHub repository `rvmeesa/Automated-Test-cases-using-Jenkins`, I will structure it to provide a clear overview of the project, including its purpose, setup instructions, usage, and other relevant details. Since the repository lacks a description, I will assume it focuses on automating test cases using Jenkins, a popular CI/CD tool, and provide a professional and concise README in Markdown format.
-
-
 
 # Automated Test Cases Using Jenkins
 
